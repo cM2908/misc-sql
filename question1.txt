@@ -1,0 +1,48 @@
+DROP TABLE emp_input;
+CREATE TABLE emp_input
+(
+	id INT,
+	name VARCHAR(40)
+);
+
+INSERT INTO emp_input VALUES (1, 'Emp1');
+INSERT INTO emp_input VALUES (2, 'Emp2');
+INSERT INTO emp_input VALUES (3, 'Emp3');
+INSERT INTO emp_input VALUES (4, 'Emp4');
+INSERT INTO emp_input VALUES (5, 'Emp5');
+INSERT INTO emp_input VALUES (6, 'Emp6');
+INSERT INTO emp_input VALUES (7, 'Emp7');
+INSERT INTO emp_input VALUES (8, 'Emp8');
+
+Input :
+-------
+
+id	name
+-------------
+1	emp1
+2	emp2
+3	emp3
+4	emp4
+5	emp5
+6	emp6
+7	emp7
+8	emp8
+
+
+Expected Output :
+-----------------
+
+result
+-------------
+1 emp1,2 emp2
+3 emp3,4 emp4
+5 emp5,6 emp6
+7 emp7,8 emp8
+
+
+Solution :
+----------
+
+SELECT CONCAT(CONCAT(e1.id,' ',e1.name),',',CONCAT(e2.id,' ',e2.name)) AS result 
+FROM emp_input e1
+INNER JOIN emp_input e2 ON e1.id + 1 = e2.id AND e1.id%2 = 1;
