@@ -1,2 +1,1 @@
-# misc-sql
-Miscellaneous SQL Questions
+# Miscellaneous SQL Questions
