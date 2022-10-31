@@ -1,4 +1,5 @@
-Table: order_status
+-->> Table: order_status
+
 ----------+-----------------+---------------------
  order_id | order_status_id |       timest        
 ----------+-----------------+---------------------
@@ -20,13 +21,14 @@ Table: order_status
         4 |               6 | 2019-01-28 19:48:00
 ----------+-----------------+---------------------
 
-This table "order_status" shows us all the order statuses that each order went through.
-In this table, we have the "order_id", "order_status_id" and "timestamps".
-"timest" column tells us when each order status has happened.
-As you can see, the "order_id" is not unique in this table.
+- This table "order_status" shows us all the order statuses that each order went through.
+- In this table, we have the "order_id", "order_status_id" and "timestamps".
+- "timest" column tells us when each order status has happened.
+- As you can see, the "order_id" is not unique in this table.
 
 
-Table: contact
+-->>Table: contact
+
 ----------+---------------------
  order_id |    contact_time     
 ----------+---------------------
@@ -37,19 +39,27 @@ Table: contact
 ----------+---------------------
 
 
-From the table "contact", we can understand when the customer has contacted us.
-As you can see, the "order_id" is unique in this table. 
+- From the table "contact", we can understand when the customer has contacted us.
+- As you can see, the "order_id" is unique in this table. 
 
-The problem we need to solve:
-In order to decrease the number of contacts we have from customers, we need to understand why they are contacting us? 
-In other words, which order status is most problematic for the customer that makes them contact us.
+- The problem we need to solve:
+- In order to decrease the number of contacts we have from customers, we need to understand why they are contacting us? 
+- In other words, which order status is most problematic for the customer that makes them contact us.
 
-We need you as an Analyst to tell us for each order, what is the last order status before the customer contacting us?
+- We need you as an Analyst to tell us for each order, what is the last order status before the customer contacting us?
 
 
--------------------
-PostgreSQL Script :
--------------------
+-->> Expected output :
+
+----------------------------------+-------------------------------------
+ most_problematic_order_status_id | most_problematic_order_status_count 
+----------------------------------+-------------------------------------
+                                3 |                                   2
+----------------------------------+-------------------------------------
+
+
+
+-->> PostgreSQL Script :
 
 CREATE TABLE order_status(
 	order_id INT,
@@ -86,9 +96,7 @@ INSERT INTO contact VALUES (4,'24-12-2019 19:38:00');
 INSERT INTO contact VALUES (5,'28-01-2019 19:46:00');
 
 
-----------
-Solution :
-----------
+-->> Solution :
 
 WITH order_status_before_contact AS (
 	SELECT o.*,
@@ -103,14 +111,3 @@ WHERE timest = time_before_call
 GROUP BY order_status_id
 ORDER BY most_problematic_order_status_count DESC
 LIMIT 1;
-
-
---------
-output :
---------
-
-----------------------------------+-------------------------------------
- most_problematic_order_status_id | most_problematic_order_status_count 
-----------------------------------+-------------------------------------
-                                3 |                                   2
-----------------------------------+-------------------------------------

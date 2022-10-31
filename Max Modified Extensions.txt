@@ -1,0 +1,94 @@
+-->> Problem: Most Modified Extensions
+
+-->> Table: files
+----+---------------+----------------------
+ id | date_modified |      file_name       
+----+---------------+----------------------
+  1 | 2021-06-03    | thresholds.svg
+  2 | 2021-06-01    | redrag.py
+  3 | 2021-06-03    | counter.pdf
+  4 | 2021-06-06    | reinfusion.py
+  5 | 2021-06-06    | tonoplast.docx
+  6 | 2021-06-01    | uranian.pptx
+  7 | 2021-06-03    | discuss.pdf
+  8 | 2021-06-06    | nontheologically.pdf
+  9 | 2021-06-01    | skiagrams.py
+ 10 | 2021-06-04    | flavors.py
+ 11 | 2021-06-05    | nonv.pptx
+ 12 | 2021-06-01    | under.pptx
+ 13 | 2021-06-02    | demit.csv
+ 14 | 2021-06-02    | trailings.pptx
+ 15 | 2021-06-04    | asst.py
+ 16 | 2021-06-03    | pseudo.pdf
+ 17 | 2021-06-03    | unguarded.jpeg
+ 18 | 2021-06-06    | suzy.docx
+ 19 | 2021-06-06    | anitsplentic.py
+ 20 | 2021-06-03    | tallies.py
+----+---------------+----------------------
+
+- This table contains a list of filenames including their extensions and the dates they were last modified.
+- For each date that a modification was made, return the date, the extension(s) of the files that were modified the most, and the number of files modified that date. 
+- If more than one file extension ties for the most modifications, return them as a comma-delimited list in reverse alphabetical order. 
+
+-->> Expected Output : 
+
+---------------+-----------+----------------
+ date_modified | extension | modified_count 
+---------------+-----------+----------------
+ 2021-06-01    | py,pptx   |              2
+ 2021-06-02    | pptx,csv  |              1
+ 2021-06-03    | pdf       |              3
+ 2021-06-04    | py        |              2
+ 2021-06-05    | pptx      |              1
+ 2021-06-06    | py,docx   |              2
+---------------+-----------+----------------
+
+
+-->> PostgreSQL Script :
+
+CREATE TABLE files
+(
+	id INT PRIMARY KEY,
+	date_modified DATE,
+	file_name VARCHAR(50)
+);
+
+INSERT INTO files VALUES (1,TO_DATE('2021-06-03','yyyy-mm-dd'),'thresholds.svg');
+INSERT INTO files VALUES (2,TO_DATE('2021-06-01','yyyy-mm-dd'),'redrag.py');
+INSERT INTO files VALUES (3,TO_DATE('2021-06-03','yyyy-mm-dd'),'counter.pdf');
+INSERT INTO files VALUES (4,TO_DATE('2021-06-06','yyyy-mm-dd'),'reinfusion.py');
+INSERT INTO files VALUES (5,TO_DATE('2021-06-06','yyyy-mm-dd'),'tonoplast.docx');
+INSERT INTO files VALUES (6,TO_DATE('2021-06-01','yyyy-mm-dd'),'uranian.pptx');
+INSERT INTO files VALUES (7,TO_DATE('2021-06-03','yyyy-mm-dd'),'discuss.pdf');
+INSERT INTO files VALUES (8,TO_DATE('2021-06-06','yyyy-mm-dd'),'nontheologically.pdf');
+INSERT INTO files VALUES (9,TO_DATE('2021-06-01','yyyy-mm-dd'),'skiagrams.py');
+INSERT INTO files VALUES (10,TO_DATE('2021-06-04','yyyy-mm-dd'),'flavors.py');
+INSERT INTO files VALUES (11,TO_DATE('2021-06-05','yyyy-mm-dd'),'nonv.pptx');
+INSERT INTO files VALUES (12,TO_DATE('2021-06-01','yyyy-mm-dd'),'under.pptx');
+INSERT INTO files VALUES (13,TO_DATE('2021-06-02','yyyy-mm-dd'),'demit.csv');
+INSERT INTO files VALUES (14,TO_DATE('2021-06-02','yyyy-mm-dd'),'trailings.pptx');
+INSERT INTO files VALUES (15,TO_DATE('2021-06-04','yyyy-mm-dd'),'asst.py');
+INSERT INTO files VALUES (16,TO_DATE('2021-06-03','yyyy-mm-dd'),'pseudo.pdf');
+INSERT INTO files VALUES (17,TO_DATE('2021-06-03','yyyy-mm-dd'),'unguarded.jpeg');
+INSERT INTO files VALUES (18,TO_DATE('2021-06-06','yyyy-mm-dd'),'suzy.docx');
+INSERT INTO files VALUES (19,TO_DATE('2021-06-06','yyyy-mm-dd'),'anitsplentic.py');
+INSERT INTO files VALUES (20,TO_DATE('2021-06-03','yyyy-mm-dd'),'tallies.py');
+
+
+-->> Solution :
+
+WITH modified_extensions AS (
+	SELECT date_modified,SUBSTR(file_name,POSITION('.' IN file_name)+1) AS file_extension,
+		COUNT(1) AS modified_count
+	FROM files
+	GROUP BY date_modified,SUBSTR(file_name,POSITION('.' IN file_name)+1)
+),
+max_modified_extensions AS (
+	SELECT *,
+		MAX(modified_count) OVER (PARTITION BY date_modified) AS max_modified_count
+	FROM modified_extensions
+)
+SELECT date_modified,STRING_AGG(file_extension,',' ORDER BY file_extension DESC) AS extension,modified_count
+FROM max_modified_extensions
+WHERE max_modified_count=modified_count
+GROUP BY date_modified,modified_count;

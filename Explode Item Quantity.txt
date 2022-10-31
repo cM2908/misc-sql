@@ -1,0 +1,53 @@
+-->> Table : amazon_items
+
+-----+------+-----
+ oid | item | qty 
+-----+------+-----
+ O1  | A1   |   5
+ O2  | A2   |   1
+ O3  | A3   |   3
+-----+------+-----
+
+- Explode the quantity of items given in the table.
+
+
+-->> Expected Output :  
+
+-----+------+-----
+ oid | item | qty 
+-----+------+-----
+ O1  | A1   |   1
+ O1  | A1   |   1
+ O1  | A1   |   1  
+ O1  | A1   |   1
+ O1  | A1   |   1
+ O2  | A2   |   1
+ O3  | A3   |   1
+ O3  | A3   |   1
+ O3  | A3   |   1
+-----+------+-----
+
+
+--> PostgreSQL Script :
+
+CREATE TABLE amazon_items(
+	oid VARCHAR,
+	item VARCHAR,
+	qty INT
+);
+
+INSERT INTO amazon_items VALUES ('O1','A1',5);
+INSERT INTO amazon_items VALUES ('O2','A2',1);
+INSERT INTO amazon_items VALUES ('O3','A3',3);
+ 
+ 
+-->> Solution :
+
+WITH RECURSIVE exploded_items AS(
+	SELECT oid,item,qty,1 AS nq FROM amazon_items
+	UNION
+	SELECT oid,item,qty-1,1 AS nq FROM exploded_items WHERE qty-1 > 0
+)
+
+SELECT oid,item,nq FROM exploded_items
+ORDER BY oid,item;

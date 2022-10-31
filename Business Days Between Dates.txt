@@ -49,7 +49,7 @@ Business days = (Monday to Friday) - Holidays
 -----------+----------------+---------------+-------------------
 
 
---> Query: 
+--> Query:
 
 WITH non_weekend_holidays AS (
 	SELECT *
