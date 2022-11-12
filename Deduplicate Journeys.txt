@@ -1,0 +1,52 @@
+-->> Problem: Deduplicate Journeys
+
+-->> Table: journey
+-----------+-----------+----------
+  source   |   dest    | distance 
+-----------+-----------+----------
+ Bangalore | Hyderbad  |      400
+ Hyderbad  | Bangalore |      400
+ Mumbai    | Delhi     |      400
+ Delhi     | Mumbai    |      400
+ Chennai   | Pune      |      400
+ Pune      | Chennai   |      400
+-----------+-----------+----------
+
+- Write a SQL query to convert the given input into the expected output as shown below:
+
+
+-->> Expected Output : 
+-----------+----------+----------
+  source   |   dest   | distance 
+-----------+----------+----------
+ Bangalore | Hyderbad |      400
+ Chennai   | Pune     |      400
+ Delhi     | Mumbai   |      400
+-----------+----------+----------
+
+
+-->> PostgreSQL Script :
+
+CREATE TABLE journey
+(
+	source VARCHAR,
+	dest VARCHAR,
+	distance INT
+);
+
+INSERT INTO journey values ('Bangalore', 'Hyderbad', 400);
+INSERT INTO journey VALUES ('Hyderbad', 'Bangalore', 400);
+INSERT INTO journey VALUES ('Mumbai', 'Delhi', 400);
+INSERT INTO journey VALUES ('Delhi', 'Mumbai', 400);
+INSERT INTO journey VALUES ('Chennai', 'Pune', 400);
+INSERT INTO journey VALUES ('Pune', 'Chennai', 400);
+
+-->> Solution :
+
+SELECT j1.*
+FROM journey j1
+INNER JOIN journey j2 
+ON j1.source=j2.dest AND 
+   j1.dest=j2.source AND 
+   j1.source < j1.dest
+WHERE j2.source IS NOT NULL;

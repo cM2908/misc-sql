@@ -1,0 +1,59 @@
+-->> Problem: Increasing Amount
+
+-->> Table: brands
+------+---------+--------
+ year |  brand  | amount 
+------+---------+--------
+ 2018 | Apple   |  45000
+ 2019 | Apple   |  35000
+ 2020 | Apple   |  75000
+ 2018 | Samsung |  15000
+ 2019 | Samsung |  20000
+ 2020 | Samsung |  25000
+ 2018 | Nokia   |  21000
+ 2019 | Nokia   |  17000
+ 2020 | Nokia   |  14000
+------+---------+--------
+
+- Write a query to fetch the record of brand whose amount is increasing every year.
+
+-->> Expected Output : 
+------+---------+--------
+ year |  brand  | amount 
+------+---------+--------
+ 2018 | Samsung |  15000
+ 2019 | Samsung |  20000
+ 2020 | Samsung |  25000
+------+---------+--------
+
+
+-->> PostgreSQL Script :
+
+CREATE TABLE brands
+(
+    year    INT,
+    brand   VARCHAR,
+    amount  INT
+);
+
+INSERT INTO brands VALUES (2018,'Apple',45000);
+INSERT INTO brands VALUES (2019,'Apple',35000);
+INSERT INTO brands VALUES (2020,'Apple',75000);
+INSERT INTO brands VALUES (2018,'Samsung',15000);
+INSERT INTO brands VALUES (2019,'Samsung',20000);
+INSERT INTO brands VALUES (2020,'Samsung',25000);
+INSERT INTO brands VALUES (2018,'Nokia',21000);
+INSERT INTO brands VALUES (2019,'Nokia',17000);
+INSERT INTO brands VALUES (2020,'Nokia',14000);
+
+-->> Solution :
+
+WITH cte AS(
+	SELECT *,
+		DENSE_RANK() OVER (PARTITION BY brand ORDER BY year)-
+		DENSE_RANK() OVER (PARTITION BY brand ORDER BY amount) AS diff
+	FROM brands
+)
+SELECT * 
+FROM brands
+WHERE brand NOT IN (SELECT brand FROM cte WHERE diff <> 0);
