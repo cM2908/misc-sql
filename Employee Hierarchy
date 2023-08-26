@@ -24,7 +24,7 @@ Both kind of questions can be solved using join condition but we need to apply m
 So to solve these types of hierarchical questions we can use RECURSIVE ctes.
 
 
-1) Print Employees under certain Manager. (Top to Bottom)
+1) Print Employees under certain Manager till level 3. (Top to Bottom)
   Take details of certain manager as a base query & in the recursive query take direct employees of that manager
 
   WITH RECURSIVE cte AS (
@@ -35,10 +35,12 @@ So to solve these types of hierarchical questions we can use RECURSIVE ctes.
   	SELECT e.employee_id,e.employee_name,e.manager_id,level+1 AS level
   	FROM cte c
   	INNER JOIN employees_1270 e ON c.employee_id = e.manager_id
+    level < 4
   )
   SELECT DISTINCT employee_id,employee_name FROM cte WHERE employee_id <> 1;
 
 
 2) Print Managers of certain employee. (Bottom to Top)
   Take details of certain employee as a base query & in the recursive query take direct manager of that employee.
+  Just modify the above solution
   
